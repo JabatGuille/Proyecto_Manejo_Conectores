@@ -1,6 +1,6 @@
 package Objetos;
 
-import java.util.ArrayList;
+import java.util.HashMap;
 
 public class VisitaGuiada {
     private int n_visita;
@@ -12,10 +12,20 @@ public class VisitaGuiada {
     private Double coste;
     private String estado;
     private Lugar lugar;
+    private Empleado empleado = null;
+    private String horario;
 
-    private ArrayList<Cliente> clientes = new ArrayList<>();
+    public Empleado getEmpleado() {
+        return empleado;
+    }
 
-    public VisitaGuiada(int n_visita, String nombre, int n_max_cli, String punto_partida, String curso, String tematica, Double coste) {
+    public void setEmpleado(Empleado empleado) {
+        this.empleado = empleado;
+    }
+
+    private HashMap<String, Cliente> clientes = new HashMap<>();
+
+    public VisitaGuiada(int n_visita, String nombre, int n_max_cli, String punto_partida, String curso, String tematica, Double coste, Lugar lugar, String horario) {
         this.n_visita = n_visita;
         this.nombre = nombre;
         this.n_max_cli = n_max_cli;
@@ -23,6 +33,8 @@ public class VisitaGuiada {
         this.curso = curso;
         this.tematica = tematica;
         this.coste = coste;
+        this.lugar = lugar;
+        this.horario = horario;
     }
 
     public VisitaGuiada() {
@@ -92,12 +104,12 @@ public class VisitaGuiada {
         this.coste = coste;
     }
 
-    public ArrayList<Cliente> getClientes() {
+    public HashMap<String, Cliente> getClientes() {
         return clientes;
     }
 
     public void setClientes(Cliente usuario) {
-        this.clientes.add(usuario);
+        this.clientes.put(usuario.getDni(), usuario);
     }
 
     public Lugar getLugar() {
@@ -119,5 +131,17 @@ public class VisitaGuiada {
                 ", tematica='" + tematica + '\'' +
                 ", coste=" + coste +
                 '}';
+    }
+
+    public void borrar_cliente(String DNI) {
+        clientes.remove(DNI);
+    }
+
+    public String getHorario() {
+        return horario;
+    }
+
+    public void setHorario(String horario) {
+        this.horario = horario;
     }
 }
