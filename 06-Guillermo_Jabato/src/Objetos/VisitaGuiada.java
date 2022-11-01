@@ -1,8 +1,9 @@
 package Objetos;
 
+import java.io.Serializable;
 import java.util.HashMap;
 
-public class VisitaGuiada {
+public class VisitaGuiada implements Serializable {
     private int n_visita;
     private String nombre;
     private int n_max_cli;
@@ -25,7 +26,7 @@ public class VisitaGuiada {
     }
 
 
-    public VisitaGuiada(int n_visita, String nombre, int n_max_cli, String punto_partida, String curso, String tematica, Double coste, int lugar_id, String horario) {
+    public VisitaGuiada(int n_visita, String nombre, int n_max_cli, String punto_partida, String curso, String tematica, Double coste, int lugar_id, String horario,String estado) {
         this.n_visita = n_visita;
         this.nombre = nombre;
         this.n_max_cli = n_max_cli;
@@ -35,6 +36,8 @@ public class VisitaGuiada {
         this.coste = coste;
         this.lugar_id = lugar_id;
         this.horario = horario;
+        this.estado = estado;
+        this.empleado_dni = "";
     }
 
     public VisitaGuiada() {
