@@ -6,6 +6,8 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import Conexiones.DAT;
+import Conexiones.XML;
 import Objetos.Cliente;
 import Objetos.Empleado;
 import Objetos.Lugar;
@@ -69,15 +71,17 @@ public class Main {
                 }
                 case "4": {
                     System.out.println("Saliendo de la aplicación");
-                    DAT.guardar_visitas_guiadas(visitasguiadas);
-                    DAT.guardar_clientes(clientes);
-                    DAT.guardar_lugar(lugares);
-                    DAT.guardar_empleados(empleados);
-
-                    XML.guardar_visitas_guiadas(visitasguiadas);
-                    XML.guardar_clientes(clientes);
-                    XML.guardar_empleados(empleados);
-                    XML.guardar_lugar(lugares);
+                    if (opcion.equalsIgnoreCase("dat")) {
+                        DAT.guardar_visitas_guiadas(visitasguiadas);
+                        DAT.guardar_clientes(clientes);
+                        DAT.guardar_lugar(lugares);
+                        DAT.guardar_empleados(empleados);
+                    } else {
+                        XML.guardar_visitas_guiadas(visitasguiadas);
+                        XML.guardar_clientes(clientes);
+                        XML.guardar_empleados(empleados);
+                        XML.guardar_lugar(lugares);
+                    }
                     bucle = false;
                     break;
                 }
@@ -573,7 +577,6 @@ public class Main {
             System.out.println("Cancelando operación, redirigiendo al menu");
         }
     }
-
     public static int seleccionar_lugar(Scanner scanner) {
         scanner = new Scanner(System.in);
         boolean bucle = true;
@@ -1188,7 +1191,7 @@ public class Main {
                     System.out.println("No existen lugares para poder añadir, llevando al menu de crear lugares");
                     lugarid = crear_lugar(scanner);
                 } else {
-                    lugarid = añadir_lugar(scanner);
+                    lugarid = seleccionar_lugar(scanner);
                 }
             }
             System.out.println("Datos de la nueva visita guiada: \n" +
@@ -1381,31 +1384,4 @@ public class Main {
     public static void visualizar_datos_agencia() {
     }
 
-    public static Integer añadir_lugar(Scanner scanner) {
-        boolean bucle = true;
-        int id = 0;
-        if (lugares.size() == 0) {
-            id = crear_lugar(scanner);
-        }
-        for (Lugar lugar : lugares.values()) {
-            System.out.println("ID: " + lugar.getId());
-            System.out.println("Lugar: " + lugar.getLugar());
-            System.out.println("Nacionalidad: " + lugar.getNacionalidad());
-        }
-        while (bucle) {
-            System.out.println("Escriba el id del lugar que quiere añadir");
-            try {
-                scanner = new Scanner(System.in);
-                id = scanner.nextInt();
-            } catch (NumberFormatException | InputMismatchException e) {
-                System.out.println("Debe escribir un numero");
-            }
-            if (lugares.containsKey(id)) {
-                bucle = false;
-            } else {
-                System.out.println("El id escrito no esta en la lista");
-            }
-        }
-        return id;
-    }
 }
