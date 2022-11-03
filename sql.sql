@@ -46,3 +46,5 @@ N_visita integer,
 foreign key (DNI_cliente) references cliente(DNI),
 foreign key (N_visita) references visitaguiada(N_visita)
 );
+
+Mysql, hsqldb y h2
