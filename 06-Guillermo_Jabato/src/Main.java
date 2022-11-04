@@ -6,8 +6,7 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
-import Conexiones.DAT;
-import Conexiones.XML;
+
 import Objetos.Cliente;
 import Objetos.Empleado;
 import Objetos.Lugar;
@@ -22,6 +21,15 @@ public class Main {
     static String opcion;
 
     public static void main(String[] args) {
+    	
+		try{
+			Class.forName("com.mysql.jdbc.Driver");
+			} catch (ClassNotFoundException ex){
+			System.out.println("Error found " + ex);
+			ex.printStackTrace();
+			}
+    	
+    	
         boolean bucle = true;
         String menu;
         Scanner scanner = new Scanner(System.in);
