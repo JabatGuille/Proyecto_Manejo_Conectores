@@ -41,7 +41,7 @@ foreign key (DNI_empleado) references empleado(DNI),
 foreign key (id_lugar) references lugar(ID)
 );
 
-Create table Usuario_Visita(
+Create table CLiente_Visita(
 id integer primary key,
 DNI_cliente varchar(50),
 N_visita integer,
