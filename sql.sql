@@ -1,3 +1,5 @@
+CREATE SCHEMA `agencia` ;
+
 Create table Cliente(
 DNI varchar(50) primary key,
 Nombre varchar(50),
