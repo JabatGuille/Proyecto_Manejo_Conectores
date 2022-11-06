@@ -1,16 +1,14 @@
 package Objetos;
 
-import java.io.Serializable;
 import java.util.HashMap;
 
-public class Cliente implements Serializable {
+public class Cliente {
     private String dni;
     private String nombre;
     private String apellido;
     private int edad;
     private String profesion;
     private String estado;
-    private String contraseña;
 
     private HashMap<Integer, Integer> visitas_numero = new HashMap<>();
 
@@ -72,14 +70,6 @@ public class Cliente implements Serializable {
 
     public void setProfesion(String profesion) {
         this.profesion = profesion;
-    }
-
-    public String getContraseña() {
-        return contraseña;
-    }
-
-    public void setContraseña(String contraseña) {
-        this.contraseña = contraseña;
     }
 
     public HashMap<Integer, Integer> getVisitas() {

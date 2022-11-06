@@ -1,9 +1,8 @@
 package Objetos;
 
-import java.io.Serializable;
 import java.util.HashMap;
 
-public class Lugar implements Serializable {
+public class Lugar{
     private int id;
     private String lugar;
     private String nacionalidad;

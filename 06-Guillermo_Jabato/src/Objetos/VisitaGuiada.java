@@ -1,9 +1,8 @@
 package Objetos;
 
-import java.io.Serializable;
 import java.util.HashMap;
 
-public class VisitaGuiada implements Serializable {
+public class VisitaGuiada{
     private int n_visita;
     private String nombre;
     private int n_max_cli;
@@ -12,9 +11,10 @@ public class VisitaGuiada implements Serializable {
     private String tematica;
     private Double coste;
     private String estado;
+    private String horario;
     private int lugar_id;
     private String empleado_dni;
-    private String horario;
+    
     private HashMap<String, String> clientes_dni = new HashMap<>();
 
     public String getEmpleado() {
