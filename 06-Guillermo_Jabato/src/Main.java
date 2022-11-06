@@ -6,7 +6,9 @@ import java.util.Scanner;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import Conexiones.H2;
 import Conexiones.Mysql;
+import Conexiones.hsqldb;
 import Objetos.Cliente;
 import Objetos.Empleado;
 import Objetos.Lugar;
@@ -23,6 +25,14 @@ public class Main {
     public static void main(String[] args) {
         boolean bucle = true;
         String menu;
+        System.out.println("MYSQL");
+        Mysql.mostar_metadatos();
+        System.out.println("H2");
+     H2.mostar_metadatos();
+        System.out.println("HSQLDB");
+        hsqldb.mostar_metadatos();
+        
+        
         Scanner scanner = new Scanner(System.in);
         while (bucle) {
             scanner = new Scanner(System.in);

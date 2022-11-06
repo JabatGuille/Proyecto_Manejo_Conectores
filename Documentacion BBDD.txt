@@ -1,0 +1,3 @@
+El schema de la BBDD de HSQLDB es PUBLIC
+
+El schema de la BBDD de H2 es PUBLIC
