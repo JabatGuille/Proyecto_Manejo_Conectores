@@ -79,7 +79,5 @@ public class Mysql {
 		}  catch (SQLException e) {
 			e.printStackTrace();
 		}
-}		
-public static void visualizar_datos_agencia() {
-	}
+}
 }

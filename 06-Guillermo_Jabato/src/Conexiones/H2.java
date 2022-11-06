@@ -103,8 +103,6 @@ public static void mostar_metadatos() {
 	}  catch (SQLException e) {
 		e.printStackTrace();
 	}
-}		
-public static void visualizar_datos_agencia() {
 }
 }
 

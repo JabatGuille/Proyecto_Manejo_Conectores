@@ -81,7 +81,5 @@ public class hsqldb {
 		}  catch (SQLException e) {
 			e.printStackTrace();
 		}
-}		
-public static void visualizar_datos_agencia() {
-	}
+}
 }

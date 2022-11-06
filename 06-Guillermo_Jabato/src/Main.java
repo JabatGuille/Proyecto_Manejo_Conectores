@@ -20,26 +20,41 @@ public class Main {
     public static HashMap<String, Empleado> empleados;
     public static HashMap<Integer, VisitaGuiada> visitasguiadas;
     public static HashMap<Integer, Lugar> lugares;
-    static String opcion;
+    static String BBDD;
 
     public static void main(String[] args) {
         boolean bucle = true;
         String menu;
-        System.out.println("MYSQL");
-        Mysql.mostar_metadatos();
-        System.out.println("H2");
-     H2.mostar_metadatos();
-        System.out.println("HSQLDB");
-        hsqldb.mostar_metadatos();
-        
-        
         Scanner scanner = new Scanner(System.in);
         while (bucle) {
             scanner = new Scanner(System.in);
-            System.out.println("Escribe dat si quieres el programa usando ficheros .dat\nEscribre XML si quieres el programa usando ficheros XML");
-            opcion = scanner.nextLine();
-            //TODO falta que el usuario pueda elegir que BBDD usar
-                System.out.println("Opcion no posible");
+            System.out.println("BBDD a usar:\n"
+            		+ "Mysql\n"
+            		+ "H2\n"
+            		+ "HSQLDB");
+            System.out.println("Escriba el nombre de la BBDD que quiere usar");
+            BBDD = scanner.nextLine();
+            switch(BBDD.toLowerCase()) {
+            case "mysql":{
+            	System.out.println("Mysql elegida");
+            	BBDD = "mysql";
+            	bucle = false;
+            	break;
+            }case "h2":{
+            	System.out.println("H2 elegida");
+            	BBDD = "h2";
+            	bucle = false;
+            	break;
+            }case "hsqldb":{
+            	System.out.println("HSQLDB elegida");
+            	BBDD = "hsqldb";
+            	bucle = false;
+            	break;
+            }default:{
+            	System.out.println("La BBDD escrita no esta en la lista");
+            	break;
+            }
+            }
             }
         bucle = true;
         while (bucle) {
@@ -48,7 +63,8 @@ public class Main {
                     "1: Sección Visitas guiadas.\n" +
                     "2: Sección Clientes.\n" +
                     "3: Sección Empleados.\n" +
-                    "4: Salir");
+                    "4: Metadatos de la BBDD\n" +
+                    "5: Salir");
             menu = scanner.nextLine();
             switch (menu) {
                 case "1": {
@@ -63,7 +79,11 @@ public class Main {
                     menu_empleado(scanner);
                     break;
                 }
-                case "4": {
+                case "4":{
+                	mostar_metadatos();	
+                	break;
+                }
+                case "5": {
                     System.out.println("Saliendo de la aplicación");
                     bucle = false;
                     break;
@@ -1292,11 +1312,17 @@ public class Main {
     }
 
     public static void mostar_metadatos() {
-    	Mysql mysql = new Mysql();
-    	Mysql.mostar_metadatos();
+    	switch(BBDD) {
+    	case "mysql":{
+    		Mysql.mostar_metadatos();
+    		break;
+        }case "h2":{
+        	H2.mostar_metadatos();
+        	break;
+        }case "hsqldb":{
+        	hsqldb.mostar_metadatos();
+        	break;
+        }	
     }
-
-    public static void visualizar_datos_agencia() {
-    }
-
+}
 }
