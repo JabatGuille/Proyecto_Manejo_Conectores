@@ -37,7 +37,6 @@ public class VisitaGuiada{
         this.lugar_id = lugar_id;
         this.horario = horario;
         this.estado = estado;
-        this.empleado_dni = "";
     }
 
     public VisitaGuiada() {

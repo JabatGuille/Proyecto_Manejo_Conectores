@@ -141,26 +141,31 @@ public class Main {
 
 	}
 
-	public static String añadir_emp_visita(Scanner scanner, int id) {
-		String DNI = "";
-		for (Empleado empleado : empleados.values()) {
-			System.out.println(empleado.getDni());
-		}
-		boolean bucle = true;
-		while (bucle) {
-			scanner = new Scanner(System.in);
-			System.out.println("Escribe el DNI del empleado que quieres añadir");
-			DNI = scanner.nextLine();
-			{
+	public static String añadir_emp_visita(Scanner scanner) {
+		if (empleados.size() > 0) {
+			String DNI = "";
+			for (Empleado empleado : empleados.values()) {
+				System.out.println(empleado.getDni());
 			}
-			if (empleados.containsKey(DNI)) {
-				System.out.println("Agregando empleado");
-				bucle = false;
-			}else {
-				System.out.println("El DNI escrito no existe");
+			boolean bucle = true;
+			while (bucle) {
+				scanner = new Scanner(System.in);
+				System.out.println("Escribe el DNI del empleado que quieres añadir");
+				DNI = scanner.nextLine();
+				{
+				}
+				if (empleados.containsKey(DNI)) {
+					System.out.println("Agregando empleado");
+					bucle = false;
+				} else {
+					System.out.println("El DNI escrito no existe");
+				}
 			}
+			return DNI;
+		} else {
+			return "vacio";
 		}
-		return DNI;
+
 	}
 
 	public static void añadir_cliente_visitaguiada(Scanner scanner) {
@@ -209,7 +214,20 @@ public class Main {
 							System.out.println("Añadiendo empleado a la visita");
 							visitasguiadas.get(N_visita).setEmpleado(DNI);
 							empleados.get(DNI).setVisitas(N_visita);
-							// TODO falta guardar datos (visitas guiadas y clientes)
+							switch (BBDD) {
+							case "mysql": {
+								Mysql.añadir_cliente_visita(DNI, N_visita);
+								break;
+							}
+							case "h2": {
+								H2.añadir_cliente_visita(DNI, N_visita);
+								break;
+							}
+							case "hsqldb": {
+								hsqldb.añadir_cliente_visita(DNI, N_visita);
+								break;
+							}
+							}
 						} else {
 							System.out.println("El DNI no existe " + DNI);
 						}
@@ -239,8 +257,20 @@ public class Main {
 							System.out.println("Añadiendo cliente");
 							clientes.get(DNI).setVisitas(N_visita);
 							visitasguiadas.get(N_visita).setClientes(DNI);
-							// TODO falta guardar datos (visitas guiadas y clientes)
-						}
+							switch (BBDD) {
+							case "mysql": {
+								Mysql.añadir_cliente_visita(DNI, N_visita);
+								break;
+							}
+							case "h2": {
+								H2.añadir_cliente_visita(DNI, N_visita);
+								break;
+							}
+							case "hsqldb": {
+								hsqldb.añadir_cliente_visita(DNI, N_visita);
+								break;
+							}
+							}						}
 					} else {
 						System.out.println("DNI: " + DNI + " incorrecto");
 					}
@@ -543,25 +573,47 @@ public class Main {
 		} else {
 			lugarid = seleccionar_lugar(scanner);
 		}
-		// TODO añadir empleados falta
-		System.out.println(
-				"Datos de la nueva visita guiada: \n" + "Nombre: " + nombre + "\n" + "Numero maximo de clientes: "
-						+ n_max_cli + "\n" + "Punto de partida: " + punto_partida + "\n" + "Curso: " + curso + "\n"
-						+ "Tematica: " + tematica + "\n" + "Coste: " + coste + "\n" + "Horario: " + horario);
-		System.out.println("Lugar\n" + "Lugar: " + lugares.get(lugarid).getLugar() + "\n" + "Nacionalidad: "
-				+ lugares.get(lugarid).getNacionalidad());
-		System.out.println("Es correcto? y/N");
-		scanner = new Scanner(System.in);
-		String comprobación = scanner.nextLine();
-		if (comprobación.equalsIgnoreCase("y")) {
-			System.out.println("Modificando visita guiada");
-			int visitaid = visitasguiadas.size();
-			visitasguiadas.put(visitaid, new VisitaGuiada(visitaid, nombre, n_max_cli, punto_partida, curso, tematica,
-					coste, lugarid, horario, ""));
-			lugares.get(lugarid).setVisitas(visitaid);
-			// TODO falta guardar datos (visitas guiadas y lugares)
+		String DNI_em = añadir_emp_visita(scanner);
+		if (!DNI_em.equals("vacio")) {
+			System.out.println(
+					"Datos de la nueva visita guiada: \n" + "Nombre: " + nombre + "\n" + "Numero maximo de clientes: "
+							+ n_max_cli + "\n" + "Punto de partida: " + punto_partida + "\n" + "Curso: " + curso + "\n"
+							+ "Tematica: " + tematica + "\n" + "Coste: " + coste + "\n" + "Horario: " + horario);
+			System.out.println("Lugar\n" + "Lugar: " + lugares.get(lugarid).getLugar() + "\n" + "Nacionalidad: "
+					+ lugares.get(lugarid).getNacionalidad());
+			System.out.println("Es correcto? y/N");
+			scanner = new Scanner(System.in);
+			String comprobación = scanner.nextLine();
+			if (comprobación.equalsIgnoreCase("y")) {
+				System.out.println("Modificando visita guiada");
+				int visitaid = visitasguiadas.size();
+				visitasguiadas.put(visitaid, new VisitaGuiada(visitaid, nombre, n_max_cli, punto_partida, curso,
+						tematica, coste, lugarid, horario, ""));
+				lugares.get(lugarid).setVisitas(visitaid);
+				visitasguiadas.get(visitaid).setEmpleado(DNI_em);
+				Lugar lugar = lugares.get(lugarid);
+				VisitaGuiada visita = visitasguiadas.get(visitaid);
+				Empleado empleado = empleados.get(DNI_em);
+				switch (BBDD) {
+				case "mysql": {
+					Mysql.insertar_visitas(visita, lugar, empleado);
+					break;
+				}
+				case "h2": {
+					H2.insertar_visitas(visita, lugar, empleado);
+					break;
+				}
+				case "hsqldb": {
+					hsqldb.insertar_visitas(visita, lugar, empleado);
+					break;
+				}
+				}
+			} else {
+				System.out.println("Cancelando operación, redirigiendo al menu");
+			}
 		} else {
-			System.out.println("Cancelando operación, redirigiendo al menu");
+			System.out.println(
+					"No hay empleados para poder añadirlos a la vista, debe crear empleados antes de hacer vistas");
 		}
 	}
 
@@ -622,8 +674,20 @@ public class Main {
 		}
 		id = lugares.size();
 		lugares.put(id, new Lugar(id, nlugar, nacionalidad));
-		// TODO falta guardar datos (lugares)
-		bucle = false;
+		switch (BBDD) {
+		case "mysql": {
+			Mysql.insertar_lugar(lugares.get(id));
+			break;
+		}
+		case "h2": {
+			H2.insertar_lugar(lugares.get(id));
+			break;
+		}
+		case "hsqldb": {
+			hsqldb.insertar_lugar(lugares.get(id));
+			break;
+		}
+		}		bucle = false;
 		return id;
 	}
 
@@ -645,7 +709,21 @@ public class Main {
 					for (Lugar lugar : lugares.values()) {
 						lugar.getVisitas().remove(numero);
 					}
-					// TODO falta guardar datos (visitas guiadas, lugares, clientes,empleados)
+
+					switch (BBDD) {
+					case "mysql": {
+						Mysql.borrar_visita(numero);
+						break;
+					}
+					case "h2": {
+						H2.borrar_visita(numero);
+						break;
+					}
+					case "hsqldb": {
+						hsqldb.borrar_visita(numero);
+						break;
+					}
+					}
 					System.out.println("Borrando visita");
 				} else {
 					System.out.println("Ese numero no esta en la lista de visitas guiadas");
@@ -781,7 +859,20 @@ public class Main {
 						v.setEmpleado(null);
 					}
 				}
-				// TODO falta guardar datos (visitas guiadas, empleados)
+				switch (BBDD) {
+				case "mysql": {
+					Mysql.borrar_empleado(dni);
+					break;
+				}
+				case "h2": {
+					H2.borrar_empleado(dni);
+					break;
+				}
+				case "hsqldb": {
+					hsqldb.borrar_empleado(dni);
+					break;
+				}
+				}
 				System.out.println("Borrando empleado");
 			} else {
 				System.out.println("El DNI escrito no esta en la lista");
@@ -897,7 +988,20 @@ public class Main {
 				for (VisitaGuiada v : visitasguiadas.values()) {
 					v.getClientes().remove(dni);
 				}
-				// TODO falta guardar datos (visitas guiadas, clientes)
+				switch (BBDD) {
+				case "mysql": {
+					Mysql.borrar_cliente(dni);
+					break;
+				}
+				case "h2": {
+					H2.borrar_cliente(dni);
+					break;
+				}
+				case "hsqldb": {
+					hsqldb.borrar_cliente(dni);
+					break;
+				}
+				}
 				System.out.println("Borrando usuario");
 			} else {
 				System.out.println("El DNI escrito no esta en la lista");
@@ -1018,7 +1122,20 @@ public class Main {
 				}
 				clientes.remove(cliente_dni);
 				clientes.put(cliente.getDni(), cliente);
-				// TODO falta guardar datos (visitas guiadas, clientes)
+				switch (BBDD) {
+				case "mysql": {
+					Mysql.modificar_cliente(cliente, cliente_dni);
+					break;
+				}
+				case "h2": {
+					H2.modificar_cliente(cliente, cliente_dni);
+					break;
+				}
+				case "hsqldb": {
+					hsqldb.modificar_cliente(cliente, cliente_dni);
+					break;
+				}
+				}
 			} else {
 				System.out.println("Cancelando operación, redirigiendo al menu");
 			}
@@ -1180,7 +1297,20 @@ public class Main {
 				visita.setLugar(lugarid);
 				visitasguiadas.put(N_visita, visita);
 				lugares.get(lugarid).setVisitas(N_visita);
-				// TODO falta guardar datos (visitas guiadas, lugares)
+				switch (BBDD) {
+				case "mysql": {
+					Mysql.modificar_visita(visitasguiadas.get(N_visita));
+					break;
+				}
+				case "h2": {
+					H2.modificar_visita(visitasguiadas.get(N_visita));
+					break;
+				}
+				case "hsqldb": {
+					hsqldb.modificar_visita(visitasguiadas.get(N_visita));
+					break;
+				}
+				}
 			} else {
 				System.out.println("Cancelando operación, redirigiendo al menu");
 			}
@@ -1311,7 +1441,20 @@ public class Main {
 				}
 				empleados.remove(empleado_DNI);
 				empleados.put(empleado.getDni(), empleado);
-				// TODO falta guardar datos (visitas guiadas, empleados)
+				switch (BBDD) {
+				case "mysql": {
+					Mysql.modificar_empleado(empleado, DNI);
+					break;
+				}
+				case "h2": {
+					H2.modificar_empleado(empleado, DNI);
+					break;
+				}
+				case "hsqldb": {
+					hsqldb.modificar_empleado(empleado, DNI);
+					break;
+				}
+				}
 			} else {
 				System.out.println("Cancelando operación, redirigiendo al menu");
 			}
