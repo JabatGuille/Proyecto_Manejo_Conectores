@@ -16,10 +16,10 @@ import Objetos.VisitaGuiada;
 
 public class Main {
 	public static String borrado = "Borrado";
-	public static HashMap<String, Cliente> clientes;
-	public static HashMap<String, Empleado> empleados;
-	public static HashMap<Integer, VisitaGuiada> visitasguiadas;
-	public static HashMap<Integer, Lugar> lugares;
+	public static HashMap<String, Cliente> clientes = new HashMap<>();
+	public static HashMap<String, Empleado> empleados = new HashMap<>();
+	public static HashMap<Integer, VisitaGuiada> visitasguiadas = new HashMap<>();
+	public static HashMap<Integer, Lugar> lugares = new HashMap<>();
 	static String BBDD;
 
 	public static void main(String[] args) {
@@ -56,6 +56,7 @@ public class Main {
 			}
 			}
 		}
+		recuperar_datos_BBDD();
 		bucle = true;
 		while (bucle) {
 			scanner = new Scanner(System.in);
@@ -99,7 +100,7 @@ public class Main {
 			scanner = new Scanner(System.in);
 			System.out.println("Escriba un numero para la opcion del menu:\n" + "1: Listar visitas guiadas\n"
 					+ "2: Nueva visita guiada.\n" + "3: Modificar visita guiada.\n" + "4: Borrar visita guiada.\n"
-					+ "5: Añadir clientes y empleado a la visita guiada\n" + "6: Salir");
+					+ "5: Añadir clientes a la visita guiada\n" + "6: Salir");
 			String menu = scanner.nextLine();
 			switch (menu) {
 			case "1": {
@@ -123,7 +124,7 @@ public class Main {
 				break;
 			}
 			case "5": {
-				añadir_cliente_visitaguiada(scanner);
+				añadir_clientes(scanner);
 				bucle = false;
 				break;
 			}
@@ -168,81 +169,20 @@ public class Main {
 
 	}
 
-	public static void añadir_cliente_visitaguiada(Scanner scanner) {
+	public static void añadir_clientes( Scanner scanner) {
 		listar_visitas_guiadas();
-		if (visitasguiadas.size() != 0) {
-			boolean bucle = true;
-			String comprobacion = "";
-			int N_visita = 0;
-			while (bucle) {
-				try {
-					System.out.println("Escriba el Numero de visita que desea añadir empleado");
-					scanner = new Scanner(System.in);
-					N_visita = scanner.nextInt();
-					if (visitasguiadas.containsKey(N_visita)) {
-						if (!visitasguiadas.get(N_visita).getEmpleado().equals("")) {
-							System.out.println("La visita ya tiene empleado");
-							System.out.println(
-									"Escriba Y si se ha equivocado de empleado, escribir cualquier otra cosa añadira clientes a la visita");
-							scanner = new Scanner(System.in);
-							comprobacion = scanner.nextLine();
-						} else {
-							comprobacion = "Y";
-						}
-						bucle = false;
-					} else {
-						System.out.println("El numero de visita indicado no existe");
-					}
-				} catch (NumberFormatException | InputMismatchException e) {
-					System.out.println("Debe escribir un numero");
-				}
+		boolean bucle = true;
+		Integer N_visita = 0;
+		while(bucle) {
+			scanner = new Scanner(System.in);
+			System.out.println("Escribe el id de la visita donde quieres añadir clientes");
+			N_visita = scanner.nextInt();
+			if(visitasguiadas.containsKey(N_visita)) {
+				bucle = false;
+			}else {
+				System.out.println("El id escrito no existe");
 			}
-			if (comprobacion.equalsIgnoreCase("Y")) {
-				listar_empleados();
-				System.out.println("Escriba el DNI del empleado que quiere añadir");
-				String DNI;
-				bucle = true;
-				while (bucle) {
-					System.out.println("Escriba el DNI del empleado");
-					scanner = new Scanner(System.in);
-					DNI = scanner.nextLine();
-					Pattern pat = Pattern.compile("[0-9]{7,8}[A-Z a-z]");
-					Matcher mat = pat.matcher(DNI);
-					if (mat.matches()) {
-						if (empleados.containsKey(DNI)) {
-							bucle = false;
-							System.out.println("Añadiendo empleado a la visita");
-							visitasguiadas.get(N_visita).setEmpleado(DNI);
-							empleados.get(DNI).setVisitas(N_visita);
-							switch (BBDD) {
-							case "mysql": {
-								Mysql.añadir_cliente_visita(DNI, N_visita);
-								break;
-							}
-							case "h2": {
-								H2.añadir_cliente_visita(DNI, N_visita);
-								break;
-							}
-							case "hsqldb": {
-								hsqldb.añadir_cliente_visita(DNI, N_visita);
-								break;
-							}
-							}
-						} else {
-							System.out.println("El DNI no existe " + DNI);
-						}
-					} else {
-						System.out.println("DNI: " + DNI + " incorrecto");
-					}
-				}
-			}
-			añadir_clientes(N_visita, scanner);
-		} else {
-			System.out.println("No existen visitas donde añadir empledo y clientes");
 		}
-	}
-
-	public static void añadir_clientes(Integer N_visita, Scanner scanner) {
 		listar_clientes();
 		if (clientes.size() != 0) {
 			while (visitasguiadas.get(N_visita).getClientes().size() != visitasguiadas.get(N_visita).getN_max_cli()) {
@@ -565,6 +505,7 @@ public class Main {
 		}
 		scanner = new Scanner(System.in);
 		System.out.println("Escriba Y si quiere crear un lugar");
+		System.out.println(lugares.size());
 		if (scanner.nextLine().equalsIgnoreCase("y") || lugares.size() == 0) {
 			if (lugares.size() == 0) {
 				System.out.println("No existen lugares para poder añadir, llevando al menu de crear lugares");
