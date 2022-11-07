@@ -23,6 +23,7 @@ public class Mysql {
 			statement.setInt(2, id);
 			statement.executeUpdate();
 			System.out.println("Cliente añadido a la visita");
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
@@ -40,7 +41,7 @@ public class Mysql {
 			statement.setInt(1, visita_id);
 			statement.executeUpdate();
 			System.out.println("Visita borrada");
-
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
@@ -61,6 +62,7 @@ public class Mysql {
 			if (resulset.getRow() > 0) {
 				System.out.println("Cliente borrado");
 			}
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
@@ -81,6 +83,7 @@ public class Mysql {
 			if (resulset.getRow() > 0) {
 				System.out.println("Empleado borrado");
 			}
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
@@ -107,6 +110,7 @@ public class Mysql {
 			if (resulset.getRow() > 0) {
 				System.out.println("Cliente modificado");
 			}
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
@@ -135,6 +139,7 @@ public class Mysql {
 			if (resulset.getRow() > 0) {
 				System.out.println("Empleado modificado");
 			}
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
@@ -160,6 +165,7 @@ public class Mysql {
 			if (resulset.getRow() > 0) {
 				System.out.println("Visita modificada");
 			}
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
@@ -240,7 +246,7 @@ public class Mysql {
 			statement.setString(6, cliente.getEstado());
 			statement.executeUpdate();
 			System.out.println("Fila insertada");
-
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
@@ -262,6 +268,7 @@ public class Mysql {
 						resulset.getString("horario"), resulset.getString("estado")));
 				visitas.get(id).setEmpleado(resulset.getString("DNI_empleado"));
 			}
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
@@ -279,6 +286,7 @@ public class Mysql {
 				int id = resulset.getInt("ID");
 				lugares.put(id, new Lugar(id, resulset.getString("Lugar"), resulset.getString("Nacionalidad")));
 			}
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
@@ -298,6 +306,7 @@ public class Mysql {
 						resulset.getString("Fecha_nac"), resulset.getString("Fecha_cont"),
 						resulset.getString("Nacionalidad"), resulset.getString("Cargo"), resulset.getString("Estado")));
 			}
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
@@ -323,6 +332,7 @@ public class Mysql {
 				String DNI = resulset.getString("DNI_cliente");
 				clientes.get(DNI).setVisitas(resulset.getInt("N_visita"));
 			}
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}

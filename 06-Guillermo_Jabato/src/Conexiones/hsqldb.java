@@ -11,17 +11,17 @@ import Objetos.VisitaGuiada;
 public class hsqldb {
 	
 	static String conexion_string = "jdbc:hsqldb:hsql://localhost//";
+
 	public static void añadir_cliente_visita(String DNI, int id) {
 		try {
 			Connection conexion = DriverManager.getConnection(conexion_string);
-			String sql = "INSER INTO cliente_visita (DNI_cliente,N_visita) values (?,?)";
+			String sql = "INSERT INTO CLIENTE_VISITA (DNI_cliente,N_visita) values (?,?)";
 			PreparedStatement statement = conexion.prepareStatement(sql);
 			statement.setString(1, DNI);
-			statement.setInt(1, id);
-			ResultSet resulset = statement.executeQuery();
-			if (resulset.getRow() > 0) {
-				System.out.println("Cliente añadido a la visita");
-			}
+			statement.setInt(2, id);
+			statement.executeUpdate();
+			System.out.println("Cliente añadido a la visita");
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
@@ -30,18 +30,16 @@ public class hsqldb {
 	public static void borrar_visita(int visita_id) {
 		try {
 			Connection conexion = DriverManager.getConnection(conexion_string);
-			String sql = "UPDATE VISITAGUIADA\r\n" + "  SET estado='Borrado',DNI_empleado=null,id_lugar=null"
-					+ "  WHERE N_vista=?";
+			String sql = "UPDATE VISITAGUIADA SET estado='Borrado',DNI_empleado=null,id_lugar=null WHERE N_vista=?";
 			PreparedStatement statement = conexion.prepareStatement(sql);
 			statement.setInt(1, visita_id);
-			ResultSet resulset = statement.executeQuery();
+			statement.executeUpdate();
 			sql = "DELETE FROM cliente_visita where N_visita=?";
 			statement = conexion.prepareStatement(sql);
 			statement.setInt(1, visita_id);
-			resulset = statement.executeQuery();
-			if (resulset.getRow() > 0) {
-				System.out.println("Visita borrada");
-			}
+			statement.executeUpdate();
+			System.out.println("Visita borrada");
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
@@ -62,6 +60,7 @@ public class hsqldb {
 			if (resulset.getRow() > 0) {
 				System.out.println("Cliente borrado");
 			}
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
@@ -82,6 +81,7 @@ public class hsqldb {
 			if (resulset.getRow() > 0) {
 				System.out.println("Empleado borrado");
 			}
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
@@ -108,6 +108,7 @@ public class hsqldb {
 			if (resulset.getRow() > 0) {
 				System.out.println("Cliente modificado");
 			}
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
@@ -136,6 +137,7 @@ public class hsqldb {
 			if (resulset.getRow() > 0) {
 				System.out.println("Empleado modificado");
 			}
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
@@ -161,6 +163,7 @@ public class hsqldb {
 			if (resulset.getRow() > 0) {
 				System.out.println("Visita modificada");
 			}
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
@@ -174,10 +177,9 @@ public class hsqldb {
 			statement.setInt(1, lugar.getId());
 			statement.setString(2, lugar.getLugar());
 			statement.setString(3, lugar.getNacionalidad());
-			ResultSet resulset = statement.executeQuery();
-			if (resulset.getRow() > 0) {
-				System.out.println("Lugar insertado");
-			}
+			statement.executeUpdate();
+			System.out.println("Lugar insertado");
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
@@ -186,19 +188,7 @@ public class hsqldb {
 	public static void insertar_visitas(VisitaGuiada visita, Lugar lugar, Empleado empleado) {
 		try {
 			Connection conexion = DriverManager.getConnection(conexion_string);
-			String sql = "SELECT * FROM LUGAR where id=" + lugar.getId();
-			Statement statement = conexion.createStatement();
-			ResultSet resulset = statement.executeQuery(sql);
-			if (resulset.getRow() != 0) {
-				insertar_lugar(lugar);
-			}
-			sql = "SELECT * FROM EMPLEAADO where DNI=" + empleado.getDni();
-			statement = conexion.createStatement();
-			resulset = statement.executeQuery(sql);
-			if (resulset.getRow() != 0) {
-				insertar_empleado(empleado);
-			}
-			sql = "INSERT INTO VISITAGUIADA (N_visita,Nombre,N_max_cli,Punto_partida,Curso,tematica,coste,estado,horario,DNI_empleado,id_lugar) values (?,?,?,?,?,?,?,?,?,?,?)";
+			String sql = "INSERT INTO VISITAGUIADA (N_visita,Nombre,N_max_cli,Punto_partida,Curso,tematica,coste,estado,horario,DNI_empleado,id_lugar) values (?,?,?,?,?,?,?,?,?,?,?)";
 			PreparedStatement pstatement = conexion.prepareStatement(sql);
 			pstatement.setInt(1, visita.getN_visita());
 			pstatement.setString(2, visita.getNombre());
@@ -211,35 +201,12 @@ public class hsqldb {
 			pstatement.setString(9, visita.getHorario());
 			pstatement.setString(10, visita.getEmpleado());
 			pstatement.setInt(11, visita.getLugar());
-
-			resulset = pstatement.executeQuery();
-			if (resulset.getRow() > 0) {
-				System.out.println("Fila insertada");
-			}
+			pstatement.executeUpdate();
+			System.out.println("Visita insertada");
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
-
-		try {
-			Connection conexion = DriverManager.getConnection(conexion_string);
-			String sql = "INSERT INTO EMPLEADO (DNI,Nombre,Apellido,Fecha_nac,Fecha_cont,Nacionalidad,Cargo,estado) values (?,?,?,?,?,?,?,?)";
-			PreparedStatement statement = conexion.prepareStatement(sql);
-			statement.setString(1, empleado.getDni());
-			statement.setString(2, empleado.getNombre());
-			statement.setString(3, empleado.getApellido());
-			statement.setString(4, empleado.getFecha_Nac());
-			statement.setString(5, empleado.getFecha_cont());
-			statement.setString(6, empleado.getNacionalidad());
-			statement.setString(7, empleado.getCargo());
-			statement.setString(8, empleado.getEstado());
-			ResultSet resulset = statement.executeQuery();
-			if (resulset.getRow() > 0) {
-				System.out.println("Visita insertada");
-			}
-		} catch (SQLException r) {
-			r.printStackTrace();
-		}
-
 	}
 
 	public static void insertar_empleado(Empleado empleado) {
@@ -255,10 +222,9 @@ public class hsqldb {
 			statement.setString(6, empleado.getNacionalidad());
 			statement.setString(7, empleado.getCargo());
 			statement.setString(8, empleado.getEstado());
-			ResultSet resulset = statement.executeQuery();
-			if (resulset.getRow() > 0) {
-				System.out.println("Empleado insertado");
-			}
+			statement.executeUpdate();
+			System.out.println("Empleado insertado");
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
@@ -276,10 +242,9 @@ public class hsqldb {
 			statement.setInt(4, cliente.getEdad());
 			statement.setString(5, cliente.getProfesion());
 			statement.setString(6, cliente.getEstado());
-			ResultSet resulset = statement.executeQuery();
-			if (resulset.getRow() > 0) {
-				System.out.println("Fila insertada");
-			}
+			statement.executeUpdate();
+			System.out.println("Fila insertada");
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
@@ -290,17 +255,18 @@ public class hsqldb {
 		HashMap<Integer, VisitaGuiada> visitas = new HashMap<>();
 		try {
 			Connection conexion = DriverManager.getConnection(conexion_string);
-			String sql = "SELECT * FROM LUGAR";
+			String sql = "SELECT * FROM VISITAGUIADA";
 			Statement statement = conexion.createStatement();
 			ResultSet resulset = statement.executeQuery(sql);
 			while (resulset.next()) {
 				int id = resulset.getInt("N_visita");
 				visitas.put(id, new VisitaGuiada(id, resulset.getString("Nombre"), resulset.getInt("N_max_cli"),
-						resulset.getString("Punto_parida"), resulset.getString("Curso"), resulset.getString("tematica"),
-						resulset.getDouble("coste"), resulset.getInt("id_lugar"), resulset.getString("horario"),
-						resulset.getString("estado")));
+						resulset.getString("Punto_partida"), resulset.getString("Curso"),
+						resulset.getString("tematica"), resulset.getDouble("coste"), resulset.getInt("id_lugar"),
+						resulset.getString("horario"), resulset.getString("estado")));
 				visitas.get(id).setEmpleado(resulset.getString("DNI_empleado"));
 			}
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
@@ -318,6 +284,7 @@ public class hsqldb {
 				int id = resulset.getInt("ID");
 				lugares.put(id, new Lugar(id, resulset.getString("Lugar"), resulset.getString("Nacionalidad")));
 			}
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
@@ -337,6 +304,7 @@ public class hsqldb {
 						resulset.getString("Fecha_nac"), resulset.getString("Fecha_cont"),
 						resulset.getString("Nacionalidad"), resulset.getString("Cargo"), resulset.getString("Estado")));
 			}
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
@@ -362,6 +330,7 @@ public class hsqldb {
 				String DNI = resulset.getString("DNI_cliente");
 				clientes.get(DNI).setVisitas(resulset.getInt("N_visita"));
 			}
+			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
