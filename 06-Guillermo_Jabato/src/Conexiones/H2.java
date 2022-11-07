@@ -44,7 +44,7 @@ public static void añadir_cliente_visita(String DNI, int id) {
 public static void borrar_visita(int visita_id) {
 	try {
 		Connection conexion = DriverManager.getConnection(conexion_string, usuario, contraseña);
-		String sql = "UPDATE VISITAGUIADA SET estado='Borrado',DNI_empleado=null,id_lugar=null WHERE N_vista=?";
+		String sql = "UPDATE VISITAGUIADA SET estado='Borrado',DNI_empleado=null,id_lugar=null WHERE N_visita=?";
 		PreparedStatement statement = conexion.prepareStatement(sql);
 		statement.setInt(1, visita_id);
 		statement.executeUpdate();
