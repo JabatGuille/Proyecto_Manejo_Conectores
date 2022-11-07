@@ -14,6 +14,12 @@ public class Mysql {
 	static String usuario = "root";
 	static String contraseña = "12345";
 
+	/**
+	 * añadir_cliente_visita añade en la BBDD la relación entre cliente y visita
+	 * 
+	 * @param DNI
+	 * @param id
+	 */
 	public static void añadir_cliente_visita(String DNI, int id) {
 		try {
 			Connection conexion = DriverManager.getConnection(conexion_string, usuario, contraseña);
@@ -29,10 +35,16 @@ public class Mysql {
 		}
 	}
 
+	/**
+	 * borrar_visita agrega el estado borrado a la visita y quita la relacion con
+	 * los clientes
+	 * 
+	 * @param visita_id
+	 */
 	public static void borrar_visita(int visita_id) {
 		try {
 			Connection conexion = DriverManager.getConnection(conexion_string, usuario, contraseña);
-			String sql = "UPDATE VISITAGUIADA SET estado='Borrado',DNI_empleado=null,id_lugar=null WHERE N_vista=?";
+			String sql = "UPDATE VISITAGUIADA SET estado='Borrado',DNI_empleado=null,id_lugar=null WHERE N_visita=?";
 			PreparedStatement statement = conexion.prepareStatement(sql);
 			statement.setInt(1, visita_id);
 			statement.executeUpdate();
@@ -48,20 +60,24 @@ public class Mysql {
 
 	}
 
+	/**
+	 * borrar_cliente agrega el estado borrado al cliente y quita las relaciones con
+	 * las visitas
+	 * 
+	 * @param DNI
+	 */
 	public static void borrar_cliente(String DNI) {
 		try {
 			Connection conexion = DriverManager.getConnection(conexion_string, usuario, contraseña);
-			String sql = "UPDATE CLIENTE\r\n" + "  SET estado='Borrado'" + "  WHERE DNI=?";
+			String sql = "UPDATE CLIENTE SET estado='Borrado' WHERE DNI=?";
 			PreparedStatement statement = conexion.prepareStatement(sql);
 			statement.setString(1, DNI);
-			ResultSet resulset = statement.executeQuery();
+			statement.executeUpdate();
 			sql = "DELETE FROM cliente_visita where DNI_cliente=?";
 			statement = conexion.prepareStatement(sql);
 			statement.setString(1, DNI);
-			resulset = statement.executeQuery();
-			if (resulset.getRow() > 0) {
-				System.out.println("Cliente borrado");
-			}
+			statement.executeUpdate();
+			System.out.println("Cliente borrado");
 			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
@@ -69,20 +85,25 @@ public class Mysql {
 
 	}
 
+	/**
+	 * borrar_empleado agrega el estado borrado al empleado y borra la conexion con
+	 * la visita
+	 * 
+	 * @param DNI
+	 */
 	public static void borrar_empleado(String DNI) {
 		try {
 			Connection conexion = DriverManager.getConnection(conexion_string, usuario, contraseña);
-			String sql = "UPDATE EMPLEADO" + "  SET estado='Borrado'" + "  WHERE DNI=?";
+			String sql = "UPDATE EMPLEADO SET estado='Borrado' WHERE DNI=?";
 			PreparedStatement statement = conexion.prepareStatement(sql);
 			statement.setString(1, DNI);
-			ResultSet resulset = statement.executeQuery();
-			sql = "UPDATE VISITAGUIADA" + "  SET DNI_empleado=null" + "  WHERE DNI_empleado=?";
+			statement.executeUpdate();
+			sql = "UPDATE VISITAGUIADA SET DNI_empleado=null WHERE DNI_empleado=?";
 			statement = conexion.prepareStatement(sql);
 			statement.setString(1, DNI);
-			resulset = statement.executeQuery();
-			if (resulset.getRow() > 0) {
-				System.out.println("Empleado borrado");
-			}
+			statement.executeUpdate();
+			System.out.println("Empleado borrado");
+
 			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
@@ -90,37 +111,46 @@ public class Mysql {
 
 	}
 
+	/**
+	 * modificar_cliente modifica los datos del cliente
+	 * 
+	 * @param cliente
+	 * @param DNI
+	 */
 	public static void modificar_cliente(Cliente cliente, String DNI) {
 		try {
 			Connection conexion = DriverManager.getConnection(conexion_string, usuario, contraseña);
-			String sql = "UPDATE CLIENTE\r\n" + "  SET DNI=?,Nombre=?,Apellido=?,Edad=?,Profesion=?" + "  WHERE DNI="
-					+ DNI;
+			String sql = "UPDATE CLIENTE SET DNI=?,Nombre=?,Apellido=?,Edad=?,Profesion=? WHERE DNI=" + DNI;
 			PreparedStatement statement = conexion.prepareStatement(sql);
 			statement.setString(1, cliente.getDni());
 			statement.setString(2, cliente.getNombre());
 			statement.setString(3, cliente.getApellido());
 			statement.setInt(4, cliente.getEdad());
 			statement.setString(5, cliente.getProfesion());
-			ResultSet resulset = statement.executeQuery();
+			statement.executeUpdate();
 			sql = "UPDATE CLIENTE_VISITA SET DNI_cliente=? WHERE DNI_cliente=?";
 			statement = conexion.prepareStatement(sql);
 			statement.setString(1, cliente.getDni());
 			statement.setString(2, DNI);
-			resulset = statement.executeQuery();
-			if (resulset.getRow() > 0) {
-				System.out.println("Cliente modificado");
-			}
+			statement.executeUpdate();
+			System.out.println("Cliente modificado");
+
 			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
 	}
 
+	/**
+	 * modificar_empleado modifica los datos del empleado
+	 * 
+	 * @param empleado
+	 * @param DNI
+	 */
 	public static void modificar_empleado(Empleado empleado, String DNI) {
 		try {
 			Connection conexion = DriverManager.getConnection(conexion_string, usuario, contraseña);
-			String sql = "UPDATE EMPLEADO\r\n"
-					+ "  SET DNI=?,Nombre=?,Apellido=?,Fecha_nac=?,Fecha_cont=?,Nacionalidad=?,Cargo=?" + "  WHERE DNI="
+			String sql = "UPDATE EMPLEADO SET DNI=?,Nombre=?,Apellido=?,Fecha_nac=?,Fecha_cont=?,Nacionalidad=?,Cargo=? WHERE DNI="
 					+ DNI;
 			PreparedStatement statement = conexion.prepareStatement(sql);
 			statement.setString(1, empleado.getDni());
@@ -130,27 +160,29 @@ public class Mysql {
 			statement.setString(5, empleado.getFecha_cont());
 			statement.setString(6, empleado.getNacionalidad());
 			statement.setString(7, empleado.getCargo());
-			ResultSet resulset = statement.executeQuery();
+			statement.executeUpdate();
 			sql = "UPDATE visitaguiada SET DNI_empleado=? WHERE DNI_empleado=?";
 			statement = conexion.prepareStatement(sql);
 			statement.setString(1, empleado.getDni());
 			statement.setString(2, DNI);
-			resulset = statement.executeQuery();
-			if (resulset.getRow() > 0) {
-				System.out.println("Empleado modificado");
-			}
+			statement.executeUpdate();
+			System.out.println("Empleado modificado");
 			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
 	}
 
+	/**
+	 * modificar_visita modifica los datos de la visita
+	 * 
+	 * @param visita
+	 */
 	public static void modificar_visita(VisitaGuiada visita) {
 		try {
 			Connection conexion = DriverManager.getConnection(conexion_string, usuario, contraseña);
-			String sql = "UPDATE VISITAGUIADA\r\n"
-					+ "  SET nombre=?,N_max_cli=?,Punto_partida=?,Curso=?,tematica=?,coste=?,estado=?,horario=?,id_lugar=?"
-					+ "  WHERE N_vista=" + visita.getN_visita();
+			String sql = "UPDATE VISITAGUIADA SET nombre=?,N_max_cli=?,Punto_partida=?,Curso=?,tematica=?,coste=?,estado=?,horario=?,id_lugar=? WHERE N_vista="
+					+ visita.getN_visita();
 			PreparedStatement statement = conexion.prepareStatement(sql);
 			statement.setString(1, visita.getNombre());
 			statement.setInt(2, visita.getN_max_cli());
@@ -161,16 +193,19 @@ public class Mysql {
 			statement.setString(7, visita.getEstado());
 			statement.setString(8, visita.getHorario());
 			statement.setInt(9, visita.getLugar());
-			ResultSet resulset = statement.executeQuery();
-			if (resulset.getRow() > 0) {
-				System.out.println("Visita modificada");
-			}
+			statement.executeUpdate();
+			System.out.println("Visita modificada");
 			conexion.close();
 		} catch (SQLException r) {
 			r.printStackTrace();
 		}
 	}
 
+	/**
+	 * insertar_lugar inserta lugar en la BBDD
+	 * 
+	 * @param lugar
+	 */
 	public static void insertar_lugar(Lugar lugar) {
 		try {
 			Connection conexion = DriverManager.getConnection(conexion_string, usuario, contraseña);
@@ -187,7 +222,12 @@ public class Mysql {
 		}
 	}
 
-	public static void insertar_visitas(VisitaGuiada visita, Lugar lugar, Empleado empleado) {
+	/*
+	 * insertar_visitas inserta visitas a la BBDD
+	 * 
+	 * @param visita
+	 */
+	public static void insertar_visitas(VisitaGuiada visita) {
 		try {
 			Connection conexion = DriverManager.getConnection(conexion_string, usuario, contraseña);
 			String sql = "INSERT INTO VISITAGUIADA (N_visita,Nombre,N_max_cli,Punto_partida,Curso,tematica,coste,estado,horario,DNI_empleado,id_lugar) values (?,?,?,?,?,?,?,?,?,?,?)";
@@ -211,6 +251,11 @@ public class Mysql {
 		}
 	}
 
+	/**
+	 * insertar_empleado inserta empleados a la BBDD
+	 * 
+	 * @param empleado
+	 */
 	public static void insertar_empleado(Empleado empleado) {
 		try {
 			Connection conexion = DriverManager.getConnection(conexion_string, usuario, contraseña);
@@ -233,6 +278,11 @@ public class Mysql {
 
 	}
 
+	/**
+	 * insertar_cliente inserta clientes a la BBDD
+	 * 
+	 * @param cliente
+	 */
 	public static void insertar_cliente(Cliente cliente) {
 		try {
 			Connection conexion = DriverManager.getConnection(conexion_string, usuario, contraseña);
@@ -253,6 +303,11 @@ public class Mysql {
 
 	}
 
+	/**
+	 * recuperar_visitas recupera los datos de la BBDD
+	 * 
+	 * @return
+	 */
 	public static HashMap<Integer, VisitaGuiada> recuperar_visitas() {
 		HashMap<Integer, VisitaGuiada> visitas = new HashMap<>();
 		try {
@@ -275,6 +330,11 @@ public class Mysql {
 		return visitas;
 	}
 
+	/**
+	 * recuperar_lugares recupera los lugares de la BBDD
+	 * 
+	 * @return
+	 */
 	public static HashMap<Integer, Lugar> recuperar_lugares() {
 		HashMap<Integer, Lugar> lugares = new HashMap<>();
 		try {
@@ -293,6 +353,11 @@ public class Mysql {
 		return lugares;
 	}
 
+	/**
+	 * recuperar empleados recupera los empleados de la BBDD
+	 * 
+	 * @return
+	 */
 	public static HashMap<String, Empleado> recuperar_empleados() {
 		HashMap<String, Empleado> empleados = new HashMap<>();
 		try {
@@ -313,6 +378,11 @@ public class Mysql {
 		return empleados;
 	}
 
+	/**
+	 * recuperar_clientes recupera los clientes de la BBDD
+	 * 
+	 * @return
+	 */
 	public static HashMap<String, Cliente> recuperar_clientes() {
 		HashMap<String, Cliente> clientes = new HashMap<>();
 		try {
@@ -339,6 +409,9 @@ public class Mysql {
 		return clientes;
 	}
 
+	/**
+	 * mostrar_metadatos muestra los metadatos de la BBDD
+	 */
 	public static void mostar_metadatos() {
 
 		try {

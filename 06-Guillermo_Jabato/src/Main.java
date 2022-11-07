@@ -22,6 +22,12 @@ public class Main {
 	public static HashMap<Integer, Lugar> lugares = new HashMap<>();
 	static String BBDD;
 
+	/**
+	 * El main contiene la eleccion de que BBDD usar, el acceso a la recuperacion de
+	 * datos y el menu principal
+	 * 
+	 * @param args
+	 */
 	public static void main(String[] args) {
 		boolean bucle = true;
 		String menu;
@@ -94,6 +100,11 @@ public class Main {
 		scanner.close();
 	}
 
+	/**
+	 * menu_visita_guiada es el menu prinicpal de las visitas y contiene el CRUD
+	 * 
+	 * @param scanner
+	 */
 	public static void menu_visita_guiada(Scanner scanner) {
 		boolean bucle = true;
 		while (bucle) {
@@ -142,91 +153,128 @@ public class Main {
 
 	}
 
+	/**
+	 * añadir_emp_visita devuelve el DNI del empleado que se quiere añadir si no
+	 * existen empleados no se completa la creacion de la visita y devuelve vacio
+	 * 
+	 * @param scanner
+	 * @return
+	 */
 	public static String añadir_emp_visita(Scanner scanner) {
+		int i = 0;
 		if (empleados.size() > 0) {
 			String DNI = "";
 			for (Empleado empleado : empleados.values()) {
-				System.out.println(empleado.getDni());
-			}
-			boolean bucle = true;
-			while (bucle) {
-				scanner = new Scanner(System.in);
-				System.out.println("Escribe el DNI del empleado que quieres añadir");
-				DNI = scanner.nextLine();
-				{
-				}
-				if (empleados.containsKey(DNI)) {
-					System.out.println("Agregando empleado");
-					bucle = false;
+				if (!empleado.getEstado().equals(borrado)) {
+					System.out.println(empleado.getDni());
 				} else {
-					System.out.println("El DNI escrito no existe");
+					i++;
 				}
 			}
-			return DNI;
+			if (empleados.size() != i) {
+				boolean bucle = true;
+				while (bucle) {
+					scanner = new Scanner(System.in);
+					System.out.println("Escribe el DNI del empleado que quieres añadir");
+					DNI = scanner.nextLine();
+					{
+					}
+					if (empleados.containsKey(DNI)) {
+						System.out.println("Agregando empleado");
+						bucle = false;
+					} else {
+						System.out.println("El DNI escrito no existe");
+					}
+				}
+				return DNI;
+			} else {
+				return "vacio";
+			}
 		} else {
 			return "vacio";
 		}
 
 	}
 
-	public static void añadir_clientes( Scanner scanner) {
+	public static void añadir_clientes(Scanner scanner) {
 		listar_visitas_guiadas();
-		boolean bucle = true;
-		Integer N_visita = 0;
-		while(bucle) {
-			scanner = new Scanner(System.in);
-			System.out.println("Escribe el id de la visita donde quieres añadir clientes");
-			N_visita = scanner.nextInt();
-			if(visitasguiadas.containsKey(N_visita)) {
-				bucle = false;
-			}else {
-				System.out.println("El id escrito no existe");
+		int i = 0;
+		for (VisitaGuiada visita : visitasguiadas.values()) {
+			if (visita.getEstado().equals(borrado)) {
+				i++;
 			}
 		}
-		listar_clientes();
-		if (clientes.size() != 0) {
-			while (visitasguiadas.get(N_visita).getClientes().size() != visitasguiadas.get(N_visita).getN_max_cli()) {
-				System.out.println("Escriba el DNI del cliente, escribe salir si quieres salir");
+		if (visitasguiadas.size() != i) {
+			boolean bucle = true;
+			Integer N_visita = 0;
+			while (bucle) {
 				scanner = new Scanner(System.in);
-				String DNI = scanner.nextLine();
-				Pattern pat = Pattern.compile("[0-9]{7,8}[A-Z a-z]");
-				Matcher mat = pat.matcher(DNI);
-				if (!DNI.equalsIgnoreCase("salir")) {
-					if (mat.matches()) {
-						if (clientes.containsKey(DNI)) {
-							System.out.println("Añadiendo cliente");
-							clientes.get(DNI).setVisitas(N_visita);
-							visitasguiadas.get(N_visita).setClientes(DNI);
-							switch (BBDD) {
-							case "mysql": {
-								Mysql.añadir_cliente_visita(DNI, N_visita);
-								break;
-							}
-							case "h2": {
-								H2.añadir_cliente_visita(DNI, N_visita);
-								break;
-							}
-							case "hsqldb": {
-								hsqldb.añadir_cliente_visita(DNI, N_visita);
-								break;
-							}
-							}						}
+				System.out.println("Escribe el id de la visita donde quieres añadir clientes");
+				N_visita = scanner.nextInt();
+				if (visitasguiadas.containsKey(N_visita)) {
+					if (!visitasguiadas.get(N_visita).getEstado().equals(borrado)) {
+						bucle = false;
 					} else {
-						System.out.println("DNI: " + DNI + " incorrecto");
+						System.out.println("El id escrito no existe");
 					}
-					System.out.println("Terminando de añadir clientes, numero maximo de clientes en la visita\n"
-							+ "Clientes en visita: " + visitasguiadas.get(N_visita).getClientes().size() + "\n"
-							+ "Clientes maximos: " + visitasguiadas.get(N_visita).getN_max_cli());
 				} else {
-					System.out.println("Saliendo");
-					break;
+					System.out.println("El id escrito no existe");
 				}
 			}
+			listar_clientes();
+			if (clientes.size() != 0) {
+				while (visitasguiadas.get(N_visita).getClientes().size() != visitasguiadas.get(N_visita)
+						.getN_max_cli()) {
+					System.out.println("Escriba el DNI del cliente, escribe salir si quieres salir");
+					scanner = new Scanner(System.in);
+					String DNI = scanner.nextLine();
+					Pattern pat = Pattern.compile("[0-9]{7,8}[A-Z a-z]");
+					Matcher mat = pat.matcher(DNI);
+					if (!DNI.equalsIgnoreCase("salir")) {
+						if (mat.matches()) {
+							if (clientes.containsKey(DNI)) {
+								System.out.println("Añadiendo cliente");
+								clientes.get(DNI).setVisitas(N_visita);
+								visitasguiadas.get(N_visita).setClientes(DNI);
+								switch (BBDD) {
+								case "mysql": {
+									Mysql.añadir_cliente_visita(DNI, N_visita);
+									break;
+								}
+								case "h2": {
+									H2.añadir_cliente_visita(DNI, N_visita);
+									break;
+								}
+								case "hsqldb": {
+									hsqldb.añadir_cliente_visita(DNI, N_visita);
+									break;
+								}
+								}
+							}
+						} else {
+							System.out.println("DNI: " + DNI + " incorrecto");
+						}
+						System.out.println("Terminando de añadir clientes, numero maximo de clientes en la visita\n"
+								+ "Clientes en visita: " + visitasguiadas.get(N_visita).getClientes().size() + "\n"
+								+ "Clientes maximos: " + visitasguiadas.get(N_visita).getN_max_cli());
+					} else {
+						System.out.println("Saliendo");
+						break;
+					}
+				}
+			} else {
+				System.out.println("No existen clientes para poder añadir");
+			}
 		} else {
-			System.out.println("No existen clientes para poder añadir");
+			System.out.println("No existen visitas para poder añadirles clientes");
 		}
 	}
 
+	/**
+	 * menu_cliente tiene el menu principal del cliente con su CRUD
+	 * 
+	 * @param scanner
+	 */
 	public static void menu_cliente(Scanner scanner) {
 		boolean bucle = true;
 		while (bucle) {
@@ -268,7 +316,11 @@ public class Main {
 		}
 	}
 
+	/**
+	 * listar_clientes muestra todos los clientes de la BBDD que no esten borrados
+	 */
 	private static void listar_clientes() {
+		int i = 0;
 		if (clientes.size() != 0) {
 			for (Cliente cliente : clientes.values()) {
 				if (!cliente.getEstado().equals(borrado)) {
@@ -285,13 +337,23 @@ public class Main {
 							System.out.println("Horario: " + visita.getHorario());
 						}
 					}
+				} else {
+					i++;
 				}
 			}
 		} else {
 			System.out.println("No existen clientes para mostrar");
 		}
+		if (i == clientes.size()) {
+			System.out.println("No tienes clientes en linea");
+		}
 	}
 
+	/**
+	 * menu_empleado tiene el menu principal del empleado con su CRUD
+	 * 
+	 * @param scanner
+	 */
 	public static void menu_empleado(Scanner scanner) {
 		boolean bucle = true;
 		while (bucle) {
@@ -333,7 +395,11 @@ public class Main {
 		}
 	}
 
+	/**
+	 * listar_empleados muestra todos los empleados que no esten borrados
+	 */
 	private static void listar_empleados() {
+		int i = 0;
 		if (empleados.size() != 0) {
 			for (Empleado empleado : empleados.values()) {
 				if (!empleado.getEstado().equals(borrado)) {
@@ -352,14 +418,24 @@ public class Main {
 							System.out.println("Horario: " + visita.getHorario());
 						}
 					}
+				} else {
+					i++;
 				}
 			}
 		} else {
 			System.out.println("No existen empleados para mostrar");
 		}
+		if (i == empleados.size()) {
+			System.out.println("No tienes empleados en nomina");
+		}
 	}
 
+	/**
+	 * listar_visitas_guiadas muestra todas las visitas guiadas que no estan
+	 * borradas
+	 */
 	public static void listar_visitas_guiadas() {
+		int i = 0;
 		if (visitasguiadas.size() != 0) {
 			for (VisitaGuiada visita : visitasguiadas.values()) {
 				if (!visita.getEstado().equals(borrado)) {
@@ -376,14 +452,20 @@ public class Main {
 					System.out.println("Nº Visita: " + lugares.get(visita.getLugar()).getLugar());
 					System.out.println("Nº Visita: " + lugares.get(visita.getLugar()).getNacionalidad());
 					System.out.println("EMPLEADO:");
-					if (!visita.getEmpleado().equals("")) {
-						System.out.println("DNI " + empleados.get(visita.getEmpleado()).getDni());
-						System.out.println("Nombre " + empleados.get(visita.getEmpleado()).getNombre());
-						System.out.println("Apellido " + empleados.get(visita.getEmpleado()).getApellido());
-						System.out.println("Fecha Nacimiento " + empleados.get(visita.getEmpleado()).getFecha_Nac());
-						System.out.println("Fecha Contratación " + empleados.get(visita.getEmpleado()).getFecha_cont());
-						System.out.println("Nacionalidad " + empleados.get(visita.getEmpleado()).getNacionalidad());
-						System.out.println("Cargo " + empleados.get(visita.getEmpleado()).getCargo());
+					if (visita.getEmpleado() != null) {
+						if (!visita.getEmpleado().equals("")) {
+							System.out.println("DNI " + empleados.get(visita.getEmpleado()).getDni());
+							System.out.println("Nombre " + empleados.get(visita.getEmpleado()).getNombre());
+							System.out.println("Apellido " + empleados.get(visita.getEmpleado()).getApellido());
+							System.out
+									.println("Fecha Nacimiento " + empleados.get(visita.getEmpleado()).getFecha_Nac());
+							System.out.println(
+									"Fecha Contratación " + empleados.get(visita.getEmpleado()).getFecha_cont());
+							System.out.println("Nacionalidad " + empleados.get(visita.getEmpleado()).getNacionalidad());
+							System.out.println("Cargo " + empleados.get(visita.getEmpleado()).getCargo());
+						} else {
+							System.out.println("Esta visita no tiene empleado");
+						}
 					} else {
 						System.out.println("Esta visita no tiene empleado");
 					}
@@ -399,13 +481,24 @@ public class Main {
 							}
 						}
 					}
+				} else {
+					i++;
 				}
 			}
 		} else {
 			System.out.println("No existen visitas que mostrar");
 		}
+		if (visitasguiadas.size() == i) {
+			System.out.println("No tienes visitas");
+		}
 	}
 
+	/**
+	 * nueva_visita_guiada crea una nueva visita creada si no hay empleados no se
+	 * crea y el lugar se añade/crea se declara en esta funcion
+	 * 
+	 * @param scanner
+	 */
 	public static void nueva_visita_guiada(Scanner scanner) {
 		boolean bucle = true;
 		String nombre = "";
@@ -505,7 +598,6 @@ public class Main {
 		}
 		scanner = new Scanner(System.in);
 		System.out.println("Escriba Y si quiere crear un lugar");
-		System.out.println(lugares.size());
 		if (scanner.nextLine().equalsIgnoreCase("y") || lugares.size() == 0) {
 			if (lugares.size() == 0) {
 				System.out.println("No existen lugares para poder añadir, llevando al menu de crear lugares");
@@ -532,20 +624,18 @@ public class Main {
 						tematica, coste, lugarid, horario, ""));
 				lugares.get(lugarid).setVisitas(visitaid);
 				visitasguiadas.get(visitaid).setEmpleado(DNI_em);
-				Lugar lugar = lugares.get(lugarid);
 				VisitaGuiada visita = visitasguiadas.get(visitaid);
-				Empleado empleado = empleados.get(DNI_em);
 				switch (BBDD) {
 				case "mysql": {
-					Mysql.insertar_visitas(visita, lugar, empleado);
+					Mysql.insertar_visitas(visita);
 					break;
 				}
 				case "h2": {
-					H2.insertar_visitas(visita, lugar, empleado);
+					H2.insertar_visitas(visita);
 					break;
 				}
 				case "hsqldb": {
-					hsqldb.insertar_visitas(visita, lugar, empleado);
+					hsqldb.insertar_visitas(visita);
 					break;
 				}
 				}
@@ -558,6 +648,12 @@ public class Main {
 		}
 	}
 
+	/**
+	 * seleccionar_lugar seleccionas un lugar de la lista
+	 * 
+	 * @param scanner
+	 * @return
+	 */
 	public static int seleccionar_lugar(Scanner scanner) {
 		scanner = new Scanner(System.in);
 		boolean bucle = true;
@@ -584,6 +680,12 @@ public class Main {
 		return lugarid;
 	}
 
+	/**
+	 * crear_lugar crea un lugar y lo añade a la BBDD
+	 * 
+	 * @param scanner
+	 * @return
+	 */
 	public static int crear_lugar(Scanner scanner) {
 		boolean bucle = true;
 		int id = 0;
@@ -628,13 +730,26 @@ public class Main {
 			hsqldb.insertar_lugar(lugares.get(id));
 			break;
 		}
-		}		bucle = false;
+		}
+		bucle = false;
 		return id;
 	}
 
+	/**
+	 * borrar_visita_guiada añade el estado borrado a la visita y quita los enlaces
+	 * con los clientes
+	 * 
+	 * @param scanner
+	 */
 	public static void borrar_visita_guiada(Scanner scanner) {
 		listar_visitas_guiadas();
-		if (visitasguiadas.size() != 0) {
+		int i = 0;
+		for (VisitaGuiada visita : visitasguiadas.values()) {
+			if (visita.getEstado().equals(borrado)) {
+				i++;
+			}
+		}
+		if (visitasguiadas.size() != 0 || visitasguiadas.size() == i) {
 			System.out.println("Escriba el Nº de visita que quiere borrar");
 			try {
 				scanner = new Scanner(System.in);
@@ -677,6 +792,11 @@ public class Main {
 		}
 	}
 
+	/**
+	 * nuevo_empleado crea un empleado
+	 * 
+	 * @param scanner
+	 */
 	public static void nuevo_empleado(Scanner scanner) {
 		boolean bucle = true;
 		String DNI = "";
@@ -787,6 +907,11 @@ public class Main {
 		}
 	}
 
+	/**
+	 * borrar_empleado añade el estado borrado y quita en enlace con las visitas
+	 * 
+	 * @param scanner
+	 */
 	public static void borrar_empleado(Scanner scanner) {
 		listar_empleados();
 		if (empleados.size() != 0) {
@@ -796,8 +921,10 @@ public class Main {
 			if (empleados.containsKey(dni)) {
 				empleados.get(dni).setEstado(borrado);
 				for (VisitaGuiada v : visitasguiadas.values()) {
-					if (v.getEmpleado().equals(dni)) {
-						v.setEmpleado(null);
+					if (v.getEmpleado() != null) {
+						if (v.getEmpleado().equals(dni)) {
+							v.setEmpleado(null);
+						}
 					}
 				}
 				switch (BBDD) {
@@ -823,6 +950,11 @@ public class Main {
 		}
 	}
 
+	/**
+	 * nuevo_cliente crea un cliente y lo añade a la BBDD
+	 * 
+	 * @param scanner
+	 */
 	public static void nuevo_cliente(Scanner scanner) {
 		boolean bucle = true;
 		String DNI = "";
@@ -918,6 +1050,12 @@ public class Main {
 		}
 	}
 
+	/**
+	 * borrar_cliente añade el estado borrado al cliente y quita las conexiones con
+	 * visitas
+	 * 
+	 * @param scanner
+	 */
 	public static void borrar_cliente(Scanner scanner) {
 		listar_clientes();
 		if (clientes.size() != 0) {
@@ -953,6 +1091,11 @@ public class Main {
 
 	}
 
+	/**
+	 * modificar_cliente modifica los datos del cliente
+	 * 
+	 * @param scanner
+	 */
 	public static void modificar_cliente(Scanner scanner) {
 		listar_clientes();
 		if (clientes.size() != 0) {
@@ -1085,6 +1228,11 @@ public class Main {
 		}
 	}
 
+	/**
+	 * modificar_visita_guiada modificar los datos de la visita guiada
+	 * 
+	 * @param scanner
+	 */
 	public static void modificar_visita_guiada(Scanner scanner) {
 		listar_visitas_guiadas();
 		if (visitasguiadas.size() != 0) {
@@ -1260,6 +1408,11 @@ public class Main {
 		}
 	}
 
+	/**
+	 * modificar_empleado modifica los datos del empleado
+	 * 
+	 * @param scanner
+	 */
 	public static void modificar_empleado(Scanner scanner) {
 		listar_empleados();
 		if (empleados.size() != 0) {
@@ -1404,6 +1557,9 @@ public class Main {
 		}
 	}
 
+	/**
+	 * muestra los metadatos de la BBDD seleccianda
+	 */
 	public static void mostar_metadatos() {
 		switch (BBDD) {
 		case "mysql": {
@@ -1421,6 +1577,9 @@ public class Main {
 		}
 	}
 
+	/**
+	 * recuperar_datos_BBDD recupera los datos de la BBDD
+	 */
 	public static void recuperar_datos_BBDD() {
 		switch (BBDD) {
 		case "mysql": {
@@ -1450,6 +1609,10 @@ public class Main {
 		}
 	}
 
+	/**
+	 * enlazar_datos enlaza los datos de la BBDD dentro de los objetos para poder
+	 * hacer bien las relaciones
+	 */
 	public static void enlazar_datos() {
 		for (Cliente cliente : clientes.values()) {
 			for (Integer id : cliente.getVisitas().values()) {
@@ -1460,7 +1623,9 @@ public class Main {
 			lugares.get(visita.getLugar()).setVisitas(visita.getN_visita());
 		}
 		for (VisitaGuiada visita : visitasguiadas.values()) {
-			empleados.get(visita.getEmpleado()).setVisitas(visita.getN_visita());
+			if (visita.getEmpleado() != null) {
+				empleados.get(visita.getEmpleado()).setVisitas(visita.getN_visita());
+			}
 		}
 	}
 }
