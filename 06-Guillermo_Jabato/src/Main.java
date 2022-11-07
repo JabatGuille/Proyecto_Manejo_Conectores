@@ -222,7 +222,13 @@ public class Main {
 				}
 			}
 			listar_clientes();
-			if (clientes.size() != 0) {
+			i = 0;
+			for (Cliente cliente : clientes.values()) {
+				if (cliente.getEstado().equals(borrado)) {
+					i++;
+				}
+			}
+			if (clientes.size() != 0 && clientes.size() != i) {
 				while (visitasguiadas.get(N_visita).getClientes().size() != visitasguiadas.get(N_visita)
 						.getN_max_cli()) {
 					System.out.println("Escriba el DNI del cliente, escribe salir si quieres salir");
@@ -412,10 +418,12 @@ public class Main {
 					System.out.println("Nacionalidad: " + empleado.getNacionalidad());
 					System.out.println("Cargo: " + empleado.getCargo());
 					for (VisitaGuiada visita : visitasguiadas.values()) {
-						if (visita.getEmpleado().equals(empleado.getDni())) {
-							System.out.println("VISITAS");
-							System.out.println("Numero visita: " + visita.getN_visita());
-							System.out.println("Horario: " + visita.getHorario());
+						if (visita.getEmpleado()!=null) {
+							if (visita.getEmpleado().equals(empleado.getDni())) {
+								System.out.println("VISITAS");
+								System.out.println("Numero visita: " + visita.getN_visita());
+								System.out.println("Horario: " + visita.getHorario());
+							}
 						}
 					}
 				} else {
@@ -749,7 +757,7 @@ public class Main {
 				i++;
 			}
 		}
-		if (visitasguiadas.size() != 0 || visitasguiadas.size() == i) {
+		if (visitasguiadas.size() != 0 && visitasguiadas.size() != i) {
 			System.out.println("Escriba el Nº de visita que quiere borrar");
 			try {
 				scanner = new Scanner(System.in);
@@ -914,7 +922,13 @@ public class Main {
 	 */
 	public static void borrar_empleado(Scanner scanner) {
 		listar_empleados();
-		if (empleados.size() != 0) {
+		int i = 0;
+		for (Empleado empleado : empleados.values()) {
+			if (empleado.getEstado().equals(borrado)) {
+				i++;
+			}
+		}
+		if (empleados.size() != 0 && empleados.size() != i) {
 			System.out.println("Escriba el DNI del empleado que quiere borrar");
 			scanner = new Scanner(System.in);
 			String dni = scanner.nextLine();
@@ -1058,7 +1072,13 @@ public class Main {
 	 */
 	public static void borrar_cliente(Scanner scanner) {
 		listar_clientes();
-		if (clientes.size() != 0) {
+		int i = 0;
+		for (Cliente cliente : clientes.values()) {
+			if (cliente.getEstado().equals(borrado)) {
+				i++;
+			}
+		}
+		if (clientes.size() != 0 && clientes.size() != i) {
 			System.out.println("Escriba el DNI del cliente que quiere borrar");
 			scanner = new Scanner(System.in);
 			String dni = scanner.nextLine();
